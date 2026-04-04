@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mobility</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="leopard.png" />
+  <meta name="theme-color" content="#0f0f11" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GymTracker" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f7f7f5;
+      --text: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-tertiary: #a0a0a0;
+      --border: rgba(0,0,0,0.1);
+      --border-light: rgba(0,0,0,0.06);
+      --radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #191919;
+        --bg-secondary: #232323;
+        --text: #f0f0f0;
+        --text-secondary: #9a9a9a;
+        --text-tertiary: #5a5a5a;
+        --border: rgba(255,255,255,0.1);
+        --border-light: rgba(255,255,255,0.06);
+      }
+    }
+
+    html { background: var(--bg); }
+
+    body {
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    #app {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 52px 20px 80px;
+    }
+
+    .page-icon { font-size: 44px; margin-bottom: 12px; line-height: 1; }
+    .page-title { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 28px; color: var(--text); }
+
+    .sport-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.1s;
+      min-height: 64px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .sport-row:hover { background: var(--bg-secondary); }
+    .sport-row:active { background: var(--bg-secondary); opacity: 0.8; }
+    .sport-row-icon { font-size: 22px; width: 28px; text-align: center; flex-shrink: 0; }
+    .sport-row-label { font-size: 17px; font-weight: 500; flex: 1; color: var(--text); }
+    .sport-row-meta { font-size: 13px; color: var(--text-tertiary); white-space: nowrap; }
+    .row-divider { height: 0.5px; background: var(--border-light); margin: 0 12px; }
+
+    .chevron {
+      width: 16px; height: 16px;
+      stroke: var(--text-tertiary); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 15px; color: var(--text-secondary);
+      cursor: pointer; min-height: 44px;
+      padding: 8px 0; margin-bottom: 20px;
+      user-select: none; transition: color 0.1s;
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .tabs-wrapper {
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .tab-labels {
+      display: flex;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .tab-label {
+      flex: 1;
+      padding: 14px 8px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      text-align: center;
+      cursor: pointer;
+      border-right: 0.5px solid var(--border);
+      background: var(--bg-secondary);
+      user-select: none;
+      transition: color 0.1s, background 0.1s;
+      min-height: 48px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tab-label:last-child { border-right: none; }
+    .tab-label:active { opacity: 0.7; }
+    .tab-label.active {
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 500;
+      border-bottom: 0.5px solid var(--bg);
+      margin-bottom: -0.5px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .tab-content { padding: 20px 16px 24px; }
+
+    .ex-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 8px;
+      font-size: 15px; line-height: 1.4;
+      min-height: 48px;
+    }
+    .ex-row + .ex-row { border-top: 0.5px solid var(--border-light); }
+    .ex-num { color: var(--text-tertiary); min-width: 20px; flex-shrink: 0; font-size: 13px; font-variant-numeric: tabular-nums; padding-top: 2px; }
+    .ex-name { color: var(--text); font-size: 15px; }
+    .ex-detail { font-size: 13px; color: var(--text-tertiary); margin-top: 3px; }
+
+    .aff-row {
+      display: flex; gap: 14px;
+      padding: 12px 8px;
+      font-size: 15px; line-height: 1.55;
+      min-height: 48px;
+    }
+    .aff-row + .aff-row { border-top: 0.5px solid var(--border-light); }
+    .aff-num { color: var(--text-tertiary); min-width: 20px; flex-shrink: 0; font-size: 13px; padding-top: 2px; }
+    .aff-text { color: var(--text); }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <div id="home-view">
+      <div class="page-icon">🐆</div>
+      <div class="page-title">Mobility</div>
+      <div class="sport-row" onclick="openSport('cycling')">
+        <span class="sport-row-icon">🚴</span>
+        <span class="sport-row-label">Cycling</span>
+        <span class="sport-row-meta">Warm up · Cool down</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="row-divider"></div>
+      <div class="sport-row" onclick="openSport('tennis')">
+        <span class="sport-row-icon">🎾</span>
+        <span class="sport-row-label">Tennis</span>
+        <span class="sport-row-meta">Warm up · Affirmations · Cool down</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <div id="sport-view" class="hidden">
+      <div class="back-link" onclick="goHome()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Mobility
+      </div>
+      <div class="page-icon" id="sport-icon"></div>
+      <div class="page-title" id="sport-title"></div>
+      <div class="tabs-wrapper">
+        <div class="tab-labels" id="tab-labels"></div>
+        <div class="tab-content" id="tab-content"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const data = {
+      cycling: {
+        icon: '🚴', label: 'Cycling',
+        tabs: ['warmup', 'cooldown'],
+        tabLabels: { warmup: 'Warm up', cooldown: 'Cool down' },
+        warmup: [
+          { name: 'Glute bridge holds', detail: '10 reps, each side' },
+          { name: 'Clamshells with band', detail: '15 reps, each side' },
+          { name: 'Kneeling hip flexor pulse stretch', detail: '10 reps, each side' },
+          { name: 'Thoracic rotations', detail: '5 reps, each side' },
+          { name: 'Ankle circles', detail: '30 seconds, each side' },
+          { name: 'Calf raises', detail: '30 seconds, each side' },
+        ],
+        cooldown: [
+          { name: 'Standing hip flexor stretch', detail: '30 sec, each side' },
+          { name: 'Figure-4 stretch', detail: '1 min, each side' },
+          { name: 'Single-leg hamstring stretch', detail: '1 min, each side' },
+          { name: "Child's pose with lateral reach", detail: '1 min' },
+          { name: 'Wall ankle dorsiflexion stretch', detail: '1 min, each side' },
+          { name: 'Bolster chest opener', detail: '3 mins' },
+        ]
+      },
+      tennis: {
+        icon: '🎾', label: 'Tennis',
+        tabs: ['warmup', 'affirmations', 'cooldown'],
+        tabLabels: { warmup: 'Warm up', affirmations: 'Affirmations', cooldown: 'Cool down' },
+        warmup: [
+          { name: 'Glute bridge with hip abduction', detail: '10 reps, each side' },
+          { name: 'Standing band lateral walk', detail: '10 reps, each side' },
+          { name: 'Half-kneeling thoracic rotation', detail: '8 reps, each side' },
+          { name: 'Ankle circles + single-leg calf raise', detail: '30 sec + 5 reps' },
+          { name: 'Easy jog', detail: 'Baseline to net and back' },
+          { name: 'Lateral shuffles across the baseline', detail: '4 ways' },
+          { name: 'Split step jumps', detail: '10 reps' },
+          { name: 'Arm swings', detail: '10 reps' },
+          { name: 'Mini tennis', detail: '10 mins' },
+        ],
+        affirmations: [
+          'I visualize myself as worthy and successful and give myself permission to win.',
+          'I see competition as a challenge to rise to, not a threat to back down from.',
+          'I will concentrate on what I can control and focus on having quality "at-bats."',
+          'I play to win, not to avoid losing.',
+          'I am prepared. My body knows what to do.',
+          'I will get myself to the right emotional state and stress/arousal level.',
+          'I breathe in energy, I breathe out stress and negativity.',
+          'If I start to think negative thoughts, I try to think less.',
+          'I am a champion. I move on fast.',
+          'I am brave until the last point.'
+        ],
+        cooldown: [
+          { name: 'Easy walk', detail: '2–3 baseline lengths' },
+          { name: 'Cross-body posterior shoulder stretch', detail: '45 sec, each side' },
+          { name: 'Doorway or wall chest opener', detail: '30 sec, each side' },
+          { name: 'Wrist flexor & extensor stretch', detail: '30 sec, each side' },
+          { name: 'Figure-4 against a wall', detail: '1 min' },
+          { name: 'Side lunge', detail: '1 min, each side' },
+          { name: 'Kneeling hip flexor stretch', detail: '1 min, each side' },
+          { name: 'Passive windshield wiper', detail: '1 min, each side' },
+          { name: 'Standing hamstring stretch', detail: '1 min' },
+          { name: 'Wall ankle dorsiflexion', detail: '1 min' },
+        ]
+      }
+    };
+
+    let currentSport = null;
+    let currentTab = null;
+
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function goHome() {
+      hide('sport-view');
+      show('home-view');
+    }
+
+    function openSport(sport) {
+      currentSport = sport;
+      currentTab = data[sport].tabs[0];
+      const d = data[sport];
+      document.getElementById('sport-icon').textContent = d.icon;
+      document.getElementById('sport-title').textContent = d.label;
+      renderTabs();
+      renderContent();
+      hide('home-view');
+      show('sport-view');
+    }
+
+    function renderTabs() {
+      const d = data[currentSport];
+      const labels = document.getElementById('tab-labels');
+      labels.innerHTML = '';
+      d.tabs.forEach(tab => {
+        const el = document.createElement('div');
+        el.className = 'tab-label' + (tab === currentTab ? ' active' : '');
+        el.textContent = d.tabLabels[tab];
+        el.onclick = () => { currentTab = tab; renderTabs(); renderContent(); };
+        labels.appendChild(el);
+      });
+    }
+
+    function renderContent() {
+      const content = document.getElementById('tab-content');
+      const d = data[currentSport];
+      content.innerHTML = '';
+
+      if (currentTab === 'affirmations') {
+        d.affirmations.forEach((text, i) => {
+          const row = document.createElement('div');
+          row.className = 'aff-row';
+          row.innerHTML = `<div class="aff-num">${i + 1}</div><div class="aff-text">${text}</div>`;
+          content.appendChild(row);
+        });
+      } else {
+        d[currentTab].forEach((ex, i) => {
+          const row = document.createElement('div');
+          row.className = 'ex-row';
+          row.innerHTML = `<div class="ex-num">${i + 1}</div><div><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div>`;
+          content.appendChild(row);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
