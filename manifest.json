@@ -1,0 +1,16 @@
+{
+  "name": "Mobility",
+  "short_name": "Mobility",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#191919",
+  "theme_color": "#0f0f11",
+  "icons": [
+    {
+      "src": "leopard.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
