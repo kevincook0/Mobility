@@ -160,17 +160,31 @@
     <div id="home-view">
       <div class="page-icon">🐆</div>
       <div class="page-title">Mobility</div>
+      <div class="sport-row" onclick="openSport('morning')">
+        <span class="sport-row-icon">☀️</span>
+        <span class="sport-row-label">Morning routine</span>
+        <span class="sport-row-meta">~30 min</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="row-divider"></div>
       <div class="sport-row" onclick="openSport('cycling')">
         <span class="sport-row-icon">🚴</span>
         <span class="sport-row-label">Cycling</span>
-        <span class="sport-row-meta">Warm up · Cool down</span>
+        <span class="sport-row-meta">~15 min</span>
         <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="row-divider"></div>
       <div class="sport-row" onclick="openSport('tennis')">
         <span class="sport-row-icon">🎾</span>
         <span class="sport-row-label">Tennis</span>
-        <span class="sport-row-meta">Warm up · Affirmations · Cool down</span>
+        <span class="sport-row-meta">~45 min</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="row-divider"></div>
+      <div class="sport-row" onclick="openSport('evening')">
+        <span class="sport-row-icon">🌛</span>
+        <span class="sport-row-label">Evening routine</span>
+        <span class="sport-row-meta">~15 min</span>
         <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
@@ -251,6 +265,50 @@
           { name: 'Passive windshield wiper', detail: '1 min, each side' },
           { name: 'Standing hamstring stretch', detail: '1 min' },
           { name: 'Wall ankle dorsiflexion', detail: '1 min' },
+        ]
+      },
+      morning: {
+        icon: '☀️', label: 'Morning routine',
+        tabs: ['warmup', 'strength'],
+        tabLabels: { warmup: 'Warm up', strength: 'Strength' },
+        warmup: [
+          { name: 'Hop / shake', detail: '1 min' },
+          { name: 'Jumping twist', detail: '1 min' },
+          { name: 'Standing hip CARS', detail: '1 min' },
+          { name: 'Sun salutations', detail: '1 min' },
+          { name: 'Seated straddle', detail: '1 min' },
+          { name: '90/90s', detail: '1 min' },
+          { name: 'Hip CARS', detail: '1 min' },
+          { name: 'Windshield wipers', detail: '1 min' },
+          { name: 'Ankle CARS', detail: '1 min' },
+          { name: 'Neck plank', detail: '1 min' },
+        ],
+        strength: [
+          { name: 'Dead bugs', detail: '12 reps' },
+          { name: 'Bird dogs', detail: '12 reps' },
+          { name: 'Side bridge', detail: '12 reps' },
+          { name: 'Pushups', detail: '20 reps' },
+          { name: 'Pull aparts', detail: '15 reps × 2 sets' },
+          { name: 'Shoulder diagonals', detail: '12 reps' },
+          { name: 'Pull ups', detail: '10 reps' },
+          { name: 'Nordic curls', detail: '5 reps' },
+          { name: 'Wall ankle mobility', detail: '1 min' },
+          { name: 'Thoracic extension', detail: '5 min' },
+        ]
+      },
+      evening: {
+        icon: '🌛', label: 'Evening routine',
+        tabs: ['routine'],
+        tabLabels: { routine: 'Routine' },
+        routine: [
+          { name: 'Ragdolls', detail: '1 min' },
+          { name: 'Open books', detail: '1 min' },
+          { name: 'Bolster', detail: '5 min' },
+          { name: 'Couch stretch', detail: '2 min' },
+          { name: 'Passive 90/90s', detail: '1 min' },
+          { name: 'Figure 4s', detail: '1 min' },
+          { name: 'Wall ankle stretch', detail: '1 min' },
+          { name: '4/6 breathing', detail: '2 min' },
         ]
       }
     };
