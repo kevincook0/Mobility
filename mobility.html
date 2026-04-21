@@ -181,6 +181,13 @@
         <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="row-divider"></div>
+      <div class="sport-row" onclick="openSport('strength')">
+        <span class="sport-row-icon">💪</span>
+        <span class="sport-row-label">Strength</span>
+        <span class="sport-row-meta">~60 min</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="row-divider"></div>
       <div class="sport-row" onclick="openSport('evening')">
         <span class="sport-row-icon">🌛</span>
         <span class="sport-row-label">Evening routine</span>
@@ -294,6 +301,44 @@
           { name: 'Nordic curls', detail: '5 reps' },
           { name: 'Wall ankle mobility', detail: '1 min' },
           { name: 'Thoracic extension', detail: '5 min' },
+        ]
+      },
+      strength: {
+        icon: '💪', label: 'Strength',
+        tabs: ['push', 'pull', 'core'],
+        tabLabels: { push: 'Push + Quads', pull: 'Pull + Hams', core: 'Core + Cond.' },
+        push: [
+          { name: 'Band pull-apart', detail: '2 × 15' },
+          { name: 'Bodyweight squat', detail: '1 × 10' },
+          { name: 'Bench press (barbell or DB)', detail: '3 × 5–8' },
+          { name: 'Dips', detail: '3 × 8–12' },
+          { name: 'Close-grip bench press', detail: '3 × 8–10' },
+          { name: 'Overhead DB tricep extension', detail: '3 × 10–12' },
+          { name: 'Goblet squat', detail: '3 × 10–12' },
+          { name: 'Bulgarian split squat', detail: '3 × 8, each side' },
+          { name: 'Step-up (DB)', detail: '3 × 10, each side' },
+        ],
+        pull: [
+          { name: 'Dead hang', detail: '2 × 30 sec' },
+          { name: 'Glute bridge', detail: '2 × 12' },
+          { name: 'Pull-up', detail: '3 × 4–8' },
+          { name: 'DB row', detail: '3 × 8–10' },
+          { name: 'Face pull', detail: '3 × 15' },
+          { name: 'DB curl', detail: '3 × 10–12' },
+          { name: 'Incline DB curl', detail: '3 × 10–12' },
+          { name: 'Romanian deadlift', detail: '3 × 8–10' },
+          { name: 'Elevated reverse lunge', detail: '3 × 10, each side' },
+          { name: 'Sumo dumbbell deadlift', detail: '3 × 10–12' },
+        ],
+        core: [
+          { name: 'Sled pull', detail: '5 × 20 sec on / 40 sec off' },
+          { name: 'Pallof press', detail: '3 × 10, each side' },
+          { name: 'Half-kneeling chop', detail: '3 × 10, each side' },
+          { name: 'Half-kneeling lift', detail: '3 × 10, each side' },
+          { name: 'Suitcase carry', detail: '3 × 20m, each side' },
+          { name: 'Copenhagen plank', detail: '3 × 20–30 sec, each side' },
+          { name: 'Box jump or broad jump', detail: '4 × 4' },
+          { name: 'Sled push', detail: '5 × 20 sec on / 40 sec off' },
         ]
       },
       evening: {
