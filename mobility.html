@@ -138,8 +138,94 @@
     }
     .ex-row + .ex-row { border-top: 0.5px solid var(--border-light); }
     .ex-num { color: var(--text-tertiary); min-width: 20px; flex-shrink: 0; font-size: 13px; font-variant-numeric: tabular-nums; padding-top: 2px; }
+    .ex-body { flex: 1; min-width: 0; }
     .ex-name { color: var(--text); font-size: 15px; }
     .ex-detail { font-size: 13px; color: var(--text-tertiary); margin-top: 3px; }
+
+    .ex-log {
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 36px;
+      flex-shrink: 0;
+      align-self: center;
+      white-space: nowrap;
+      transition: background 0.1s, color 0.1s;
+    }
+    .ex-log:active { opacity: 0.7; }
+    .ex-log.has-log { color: var(--text); background: var(--bg); }
+
+    #log-modal {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.5);
+    }
+    @media (prefers-color-scheme: dark) {
+      .modal-backdrop { background: rgba(0,0,0,0.7); }
+    }
+    .modal-dialog {
+      position: relative;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      width: 100%; max-width: 360px;
+      max-height: calc(100dvh - 40px);
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .modal-subtitle { font-size: 13px; color: var(--text-tertiary); margin-bottom: 16px; }
+    .modal-set-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0;
+    }
+    .modal-set-row + .modal-set-row { border-top: 0.5px solid var(--border-light); }
+    .modal-set-label { font-size: 13px; color: var(--text-secondary); width: 46px; flex-shrink: 0; }
+    .modal-set-input {
+      flex: 1; min-width: 0; width: 100%;
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 44px;
+      font-variant-numeric: tabular-nums;
+    }
+    .modal-set-input::placeholder { color: var(--text-tertiary); }
+    .modal-set-input:focus { outline: none; border-color: var(--text-secondary); }
+    .modal-actions {
+      display: flex; gap: 10px; margin-top: 20px;
+    }
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 0.5px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .modal-btn:active { opacity: 0.7; }
+    .modal-save { background: var(--text); color: var(--bg); border-color: var(--text); }
 
     .aff-row {
       display: flex; gap: 14px;
@@ -151,7 +237,7 @@
     .aff-num { color: var(--text-tertiary); min-width: 20px; flex-shrink: 0; font-size: 13px; padding-top: 2px; }
     .aff-text { color: var(--text); }
 
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -188,6 +274,13 @@
         <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="row-divider"></div>
+      <div class="sport-row" onclick="openSport('foamrolling')">
+        <span class="sport-row-icon">🧘</span>
+        <span class="sport-row-label">Foam rolling</span>
+        <span class="sport-row-meta">~20 min</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="row-divider"></div>
       <div class="sport-row" onclick="openSport('evening')">
         <span class="sport-row-icon">🌛</span>
         <span class="sport-row-label">Evening routine</span>
@@ -209,6 +302,19 @@
       </div>
     </div>
 
+  </div>
+
+  <div id="log-modal" class="hidden">
+    <div class="modal-backdrop" onclick="closeLogModal()"></div>
+    <div class="modal-dialog">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-subtitle" id="modal-subtitle"></div>
+      <div id="modal-sets"></div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeLogModal()">Cancel</button>
+        <button class="modal-btn modal-save" onclick="saveLogModal()">Save</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -310,41 +416,62 @@
         push: [
           { name: 'Band pull-apart', detail: '2 × 15' },
           { name: 'Bodyweight squat', detail: '1 × 10' },
-          { name: 'Bench press (barbell or DB)', detail: '3 × 5–8' },
-          { name: 'Dips', detail: '3 × 8–12' },
-          { name: 'Close-grip bench press', detail: '3 × 8–10' },
-          { name: 'Overhead DB tricep extension', detail: '3 × 10–12' },
-          { name: 'Goblet squat', detail: '3 × 10–12' },
-          { name: 'Bulgarian split squat', detail: '3 × 8, each side' },
-          { name: 'Step-up (DB)', detail: '3 × 10, each side' },
+          { id: 'bench-press', sets: 3, name: 'Bench press (barbell or DB)', detail: '3 × 5–8' },
+          { id: 'dips', sets: 3, name: 'Dips', detail: '3 × 8–12' },
+          { id: 'close-grip-bench', sets: 3, name: 'Close-grip bench press', detail: '3 × 8–10' },
+          { id: 'overhead-tricep-ext', sets: 3, name: 'Overhead DB tricep extension', detail: '3 × 10–12' },
+          { id: 'goblet-squat', sets: 3, name: 'Goblet squat', detail: '3 × 10–12' },
+          { id: 'bulgarian-split-squat', sets: 3, name: 'Bulgarian split squat', detail: '3 × 8, each side' },
+          { id: 'step-up', sets: 3, name: 'Step-up (DB)', detail: '3 × 10, each side' },
         ],
         pull: [
           { name: 'Dead hang', detail: '2 × 30 sec' },
           { name: 'Glute bridge', detail: '2 × 12' },
-          { name: 'Pull-up', detail: '3 × 4–8' },
-          { name: 'DB row', detail: '3 × 8–10' },
-          { name: 'Face pull', detail: '3 × 15' },
-          { name: 'DB curl', detail: '3 × 10–12' },
-          { name: 'Incline DB curl', detail: '3 × 10–12' },
-          { name: 'Romanian deadlift', detail: '3 × 8–10' },
-          { name: 'Elevated reverse lunge', detail: '3 × 10, each side' },
-          { name: 'Sumo dumbbell deadlift', detail: '3 × 10–12' },
+          { id: 'pull-up', sets: 3, name: 'Pull-up', detail: '3 × 4–8' },
+          { id: 'db-row', sets: 3, name: 'DB row', detail: '3 × 8–10' },
+          { id: 'face-pull', sets: 3, name: 'Face pull', detail: '3 × 15' },
+          { id: 'db-curl', sets: 3, name: 'DB curl', detail: '3 × 10–12' },
+          { id: 'incline-db-curl', sets: 3, name: 'Incline DB curl', detail: '3 × 10–12' },
+          { id: 'rdl', sets: 3, name: 'Romanian deadlift', detail: '3 × 8–10' },
+          { id: 'elevated-reverse-lunge', sets: 3, name: 'Elevated reverse lunge', detail: '3 × 10, each side' },
+          { id: 'sumo-db-deadlift', sets: 3, name: 'Sumo dumbbell deadlift', detail: '3 × 10–12' },
         ],
         core: [
           { name: 'Sled pull', detail: '5 × 20 sec on / 40 sec off' },
-          { name: 'Pallof press', detail: '3 × 10, each side' },
-          { name: 'Half-kneeling chop', detail: '3 × 10, each side' },
-          { name: 'Half-kneeling lift', detail: '3 × 10, each side' },
+          { id: 'pallof-press', sets: 3, name: 'Pallof press', detail: '3 × 10, each side' },
+          { id: 'kneeling-chop', sets: 3, name: 'Half-kneeling chop', detail: '3 × 10, each side' },
+          { id: 'kneeling-lift', sets: 3, name: 'Half-kneeling lift', detail: '3 × 10, each side' },
           { name: 'Suitcase carry', detail: '3 × 20m, each side' },
           { name: 'Copenhagen plank', detail: '3 × 20–30 sec, each side' },
           { name: 'Box jump or broad jump', detail: '4 × 4' },
           { name: 'Sled push', detail: '5 × 20 sec on / 40 sec off' },
         ]
       },
-      evening: {
-        icon: '🌛', label: 'Evening routine',
+      foamrolling: {
+        icon: '🧘', label: 'Foam rolling',
         tabs: ['routine'],
         tabLabels: { routine: 'Routine' },
+        routine: [
+          { name: 'Glutes', detail: 'Foam roller · 60 sec, each side' },
+          { name: 'Quads', detail: 'Foam roller · 60 sec, each side' },
+          { name: 'T-spine', detail: 'Foam roller · 60 sec' },
+          { name: 'Lats', detail: 'Foam roller · 60 sec, each side' },
+          { name: 'Inner thigh', detail: 'Elevated foam roller · 60 sec, each side' },
+          { name: 'Calfs', detail: 'Ball roller · 60 sec, each side' },
+          { name: 'Seated hamstring', detail: 'Ball roller · 60 sec, each side' },
+          { name: 'Foot', detail: 'Lacrosse ball · 30 sec, each side' },
+          { name: 'Standing lower back', detail: 'Lacrosse ball · 45 sec, each side' },
+          { name: 'Standing lats', detail: 'Lacrosse ball · 60 sec, each side' },
+          { name: 'Standing chest', detail: 'Lacrosse ball · 45 sec, each side' },
+          { name: 'Standing traps', detail: 'Lacrosse ball · 60 sec, each side' },
+          { name: 'Front of neck', detail: 'Hands · 30 sec' },
+          { name: 'Back of neck', detail: 'Hands · 30 sec' },
+        ]
+      },
+      evening: {
+        icon: '🌛', label: 'Evening routine',
+        tabs: ['routine', 'rehab'],
+        tabLabels: { routine: 'Routine', rehab: 'Rehab' },
         routine: [
           { name: 'Ragdolls', detail: '1 min' },
           { name: 'Open books', detail: '1 min' },
@@ -354,12 +481,55 @@
           { name: 'Figure 4s', detail: '1 min' },
           { name: 'Wall ankle stretch', detail: '1 min' },
           { name: '4/6 breathing', detail: '2 min' },
+        ],
+        rehab: [
+          { name: 'Broomstick pronation', detail: '2 × 8–10 reps' },
+          { name: 'Broomstick supination', detail: '2 × 8–10 reps' },
+          { id: 'wrist-curls', sets: 2, name: 'Wrist curls', detail: '2 × 8 reps' },
+          { id: 'reverse-wrist-curls', sets: 2, name: 'Reverse wrist curls', detail: '2 × 8 reps' },
+          { name: 'Wrist extensors stretch', detail: '2 × 1 min' },
+          { name: 'Lacrosse ball release', detail: '1–3 min' },
         ]
       }
     };
 
     let currentSport = null;
     let currentTab = null;
+    let currentLogId = null;
+    let currentLogSets = 0;
+
+    const LOG_KEY = 'mobility.strength.log.v1';
+
+    function loadLog() {
+      try { return JSON.parse(localStorage.getItem(LOG_KEY) || '{}'); }
+      catch (e) { return {}; }
+    }
+    function saveLog(log) {
+      try { localStorage.setItem(LOG_KEY, JSON.stringify(log)); }
+      catch (e) {}
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function formatLog(id, sets) {
+      const entries = (loadLog()[id] || []);
+      const parts = [];
+      let any = false;
+      for (let i = 0; i < sets; i++) {
+        const e = entries[i];
+        if (e && (e.weight != null || e.reps != null)) {
+          any = true;
+          const w = e.weight != null ? e.weight : '—';
+          const r = e.reps != null ? e.reps : '—';
+          parts.push(`${w}×${r}`);
+        } else {
+          parts.push('—');
+        }
+      }
+      return { text: parts.join(' · '), any };
+    }
 
     function show(id) { document.getElementById(id).classList.remove('hidden'); }
     function hide(id) { document.getElementById(id).classList.add('hidden'); }
@@ -410,11 +580,76 @@
         d[currentTab].forEach((ex, i) => {
           const row = document.createElement('div');
           row.className = 'ex-row';
-          row.innerHTML = `<div class="ex-num">${i + 1}</div><div><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div>`;
+          let logBtn = '';
+          if (ex.id && ex.sets) {
+            const { text, any } = formatLog(ex.id, ex.sets);
+            logBtn = `<button class="ex-log${any ? ' has-log' : ''}" data-id="${esc(ex.id)}" data-name="${esc(ex.name)}" data-detail="${esc(ex.detail)}" data-sets="${ex.sets}" onclick="openLogModal(this)">${esc(text)}</button>`;
+          }
+          row.innerHTML = `<div class="ex-num">${i + 1}</div><div class="ex-body"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div>${logBtn}`;
           content.appendChild(row);
         });
       }
     }
+
+    function openLogModal(btn) {
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      const detail = btn.dataset.detail;
+      const sets = parseInt(btn.dataset.sets, 10);
+      currentLogId = id;
+      currentLogSets = sets;
+      const entries = loadLog()[id] || [];
+      document.getElementById('modal-title').textContent = name;
+      document.getElementById('modal-subtitle').textContent = detail;
+      const container = document.getElementById('modal-sets');
+      container.innerHTML = '';
+      for (let i = 0; i < sets; i++) {
+        const e = entries[i] || {};
+        const row = document.createElement('div');
+        row.className = 'modal-set-row';
+        row.innerHTML = `
+          <div class="modal-set-label">Set ${i + 1}</div>
+          <input class="modal-set-input" type="number" inputmode="decimal" placeholder="weight" data-field="weight" data-set="${i}" value="${e.weight != null ? e.weight : ''}">
+          <input class="modal-set-input" type="number" inputmode="decimal" placeholder="reps" data-field="reps" data-set="${i}" value="${e.reps != null ? e.reps : ''}">
+        `;
+        container.appendChild(row);
+      }
+      show('log-modal');
+      // focus first weight input for quick entry
+      const first = container.querySelector('.modal-set-input');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
+
+    function closeLogModal() {
+      hide('log-modal');
+      currentLogId = null;
+      currentLogSets = 0;
+    }
+
+    function saveLogModal() {
+      if (!currentLogId) return;
+      const entries = [];
+      for (let i = 0; i < currentLogSets; i++) {
+        const wEl = document.querySelector(`.modal-set-input[data-field="weight"][data-set="${i}"]`);
+        const rEl = document.querySelector(`.modal-set-input[data-field="reps"][data-set="${i}"]`);
+        const w = wEl && wEl.value !== '' ? Number(wEl.value) : null;
+        const r = rEl && rEl.value !== '' ? Number(rEl.value) : null;
+        entries.push({ weight: w, reps: r });
+      }
+      const log = loadLog();
+      const allEmpty = entries.every(e => e.weight == null && e.reps == null);
+      if (allEmpty) delete log[currentLogId];
+      else log[currentLogId] = entries;
+      saveLog(log);
+      closeLogModal();
+      renderContent();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !document.getElementById('log-modal').classList.contains('hidden')) {
+        closeLogModal();
+      }
+    });
   </script>
 </body>
 </html>
