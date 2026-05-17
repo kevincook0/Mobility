@@ -382,31 +382,21 @@
       },
       morning: {
         icon: '☀️', label: 'Morning routine',
-        tabs: ['warmup', 'strength'],
-        tabLabels: { warmup: 'Warm up', strength: 'Strength' },
-        warmup: [
+        tabs: ['routine'],
+        tabLabels: { routine: 'Routine' },
+        routine: [
           { name: 'Hop / shake', detail: '1 min' },
           { name: 'Jumping twist', detail: '1 min' },
-          { name: 'Standing hip CARS', detail: '1 min' },
           { name: 'Sun salutations', detail: '1 min' },
           { name: 'Seated straddle', detail: '1 min' },
           { name: '90/90s', detail: '1 min' },
-          { name: 'Hip CARS', detail: '1 min' },
           { name: 'Windshield wipers', detail: '1 min' },
-          { name: 'Ankle CARS', detail: '1 min' },
-          { name: 'Neck plank', detail: '1 min' },
-        ],
-        strength: [
-          { name: 'Dead bugs', detail: '12 reps' },
-          { name: 'Bird dogs', detail: '12 reps' },
+          { name: 'Cossack squats', detail: '1 min' },
+          { name: 'Curl up', detail: '12 reps' },
+          { name: 'Bird dog', detail: '12 reps' },
           { name: 'Side bridge', detail: '12 reps' },
-          { name: 'Pushups', detail: '20 reps' },
-          { name: 'Pull aparts', detail: '15 reps × 2 sets' },
-          { name: 'Shoulder diagonals', detail: '12 reps' },
-          { name: 'Pull ups', detail: '10 reps' },
-          { name: 'Nordic curls', detail: '5 reps' },
+          { name: 'Banded SLS', detail: '12 reps, each side' },
           { name: 'Wall ankle mobility', detail: '1 min' },
-          { name: 'Thoracic extension', detail: '5 min' },
         ]
       },
       strength: {
@@ -555,6 +545,11 @@
       const d = data[currentSport];
       const labels = document.getElementById('tab-labels');
       labels.innerHTML = '';
+      if (d.tabs.length <= 1) {
+        labels.classList.add('hidden');
+        return;
+      }
+      labels.classList.remove('hidden');
       d.tabs.forEach(tab => {
         const el = document.createElement('div');
         el.className = 'tab-label' + (tab === currentTab ? ' active' : '');
